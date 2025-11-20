@@ -14,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import *
 
-@login_required
 class UserList(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
