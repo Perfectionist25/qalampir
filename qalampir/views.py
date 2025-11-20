@@ -1,13 +1,23 @@
-from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
+from rest_framework import generics
 from django.db.models import F
+
+# Authentication tokens
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+# Local imports
 from .serializers import *
 from .models import *
 
+@login_required
 class UserList(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
