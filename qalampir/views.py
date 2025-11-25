@@ -1,5 +1,5 @@
 from rest_framework.pagination import PageNumberPagination
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,12 +31,12 @@ class UserList(APIView):
         return Response(serializer.data)
 
 
-class UserDetail(APIView):
-    def get(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
-        serializer = UserSerializer(user)
+# class UserDetail(APIView):
+#     def get(self, request, pk):
+#         user = get_object_or_404(User, pk=pk)
+#         serializer = UserSerializer(user)
 
-        return Response(serializer.data)
+#         return Response(serializer.data)
 
 # Custom Pagination class
 class CustomPagination(PageNumberPagination):
@@ -64,7 +64,7 @@ class NewsDetailView(APIView):
         News.objects.filter(slug=slug).update(views=F('views') + 1)
         news = get_object_or_404(News, slug=slug)
         serializer = NewsSerializer(news)
-        
+
         return Response(serializer.data)
 
 

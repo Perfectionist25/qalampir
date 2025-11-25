@@ -30,7 +30,7 @@ urlpatterns = [
 
     path('api/user-list/', UserList.as_view(), name='User-list'),
 
-    path('api/user-list/<int:pk>', UserDetail.as_view(), name='User-detail'),
+    # path('api/user-list/<int:pk>', UserDetail.as_view(), name='User-detail'),
 ]
 
 # faqat DEBUG True bo'lganda media fayllarni development server orqali xizmat qilish
