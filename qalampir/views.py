@@ -14,25 +14,35 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import *
 
+# Create tokens for users
+from rest_framework.authtoken.models import Token
+
+# token = Token.objects.create(user='ali')
+# print(token.key)
+
+
 class UserList(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    def get(self, request):
+    def get(self, request, format=None):
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
+
         return Response(serializer.data)
+
 
 class UserDetail(APIView):
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user)
+
         return Response(serializer.data)
 
 # Custom Pagination class
 class CustomPagination(PageNumberPagination):
-    page_size = 5  # default page size
-    page_size_query_param = 'limit'  # frontend limit yuborishi uchun
-    max_page_size = 30  # maksimal limit
+    page_size = 5
+    page_size_query_param = 'limit'
+    max_page_size = 30  
 
 
 # Yangiliklar ro'yxati - frontend nechta so'rasa, o'shancha qaytaradi. Aralash videolik va videosiz yangiliklar.
@@ -54,6 +64,7 @@ class NewsDetailView(APIView):
         News.objects.filter(slug=slug).update(views=F('views') + 1)
         news = get_object_or_404(News, slug=slug)
         serializer = NewsSerializer(news)
+        
         return Response(serializer.data)
 
 
@@ -61,7 +72,6 @@ class NewsDetailView(APIView):
 class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
-
 
 
 class CategoryNewsView(APIView):
@@ -83,8 +93,6 @@ class CategoryNewsView(APIView):
         }
 
         return Response(data)
-
-
 
 
 # Har bir kategoriya bo'yicha oxirgi videosiz yangiliklar
@@ -125,3 +133,6 @@ class NewsSearchView(APIView):
         serializer = NewsSerializer(result_page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
+
