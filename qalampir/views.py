@@ -2,6 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 # from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.db.models import F
@@ -22,13 +23,31 @@ from rest_framework.authtoken.models import Token
 
 
 class UserList(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    def get(self, request, format=None):
-        queryset = User.objects.all()
-        serializer = UserSerializer(queryset, many=True)
+    if User.is_staff:
+        authentication_classes = [SessionAuthentication, BasicAuthentication]
+        permission_classes = [IsAuthenticated]
+        def get(self, request, format=None):
+            queryset = User.objects.all()
+            serializer = UserSerializer(queryset, many=True)
 
+            return Response(serializer.data)
+    
+
+class MyPosts(APIView):
+    permission_classes = [IsAuthenticated]  # Только для авторизованных пользователей
+    
+    def get(self, request):
+        # Проверяем, является ли пользователь staff
+        if request.user.is_superuser:
+            # Если staff - показываем все посты
+            queryset = News.objects.all()
+        elif request.user.is_staff:
+            # Если обычный пользователь - показываем только его посты
+            queryset = News.objects.filter(author=request.user)
+        
+        serializer = NewsSerializer(queryset, many=True)
         return Response(serializer.data)
+
 
 
 # class UserDetail(APIView):

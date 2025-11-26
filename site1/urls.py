@@ -25,10 +25,12 @@ urlpatterns = [
     # Kategoriyalar bo`yicha yangiliklar defolt limit 5 tadan
     path('api/latest-news/', LatestNewsByCategoryView.as_view(), name='latest-news-by-category'),
 
-    # Yangiliklar poiski (yangi url qo`shilgan) !Hali qo`shish jarayonida!
+    # Yangiliklar poiski (yangi url qo`shilgan)
     path('api/news-search/', NewsSearchView.as_view(), name='news-search'),
 
     path('api/user-list/', UserList.as_view(), name='User-list'),
+
+    path('api/my-news/', MyPosts.as_view(), name='My-news'),
 
     # path('api/user-list/<int:pk>', UserDetail.as_view(), name='User-detail'),
 ]
