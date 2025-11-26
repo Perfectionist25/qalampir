@@ -28,8 +28,10 @@ urlpatterns = [
     # Yangiliklar poiski (yangi url qo`shilgan)
     path('api/news-search/', NewsSearchView.as_view(), name='news-search'),
 
+    # Userlar (adminlar) ro'yhati
     path('api/user-list/', UserList.as_view(), name='User-list'),
 
+    # Superuser hamma yangilik ko'radi, user (admin) o'zi kiritganini ko'radi
     path('api/my-news/', MyPosts.as_view(), name='My-news'),
 
     # path('api/user-list/<int:pk>', UserDetail.as_view(), name='User-detail'),
