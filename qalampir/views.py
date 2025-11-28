@@ -1,5 +1,4 @@
 from rest_framework.pagination import PageNumberPagination
-# from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -15,20 +14,28 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import *
 
+from rest_framework.permissions import AllowAny
+from django.db import models  # для Q запросов
+
 # Create tokens for users
 from rest_framework.authtoken.models import Token
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 # Any admins can see all users (admins) list
 class UserList(APIView):
-    if User.is_staff:
-        authentication_classes = [SessionAuthentication, BasicAuthentication]
-        permission_classes = [IsAuthenticated]
-        def get(self, request, format=None):
-            queryset = User.objects.all()
-            serializer = UserSerializer(queryset, many=True)
-
-            return Response(serializer.data)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, format=None):
+        if not request.user.is_staff:
+            return Response({"error": "Permission denied"}, status=403)
+            
+        queryset = User.objects.all()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
     
 
 # Main admin can see all news and admins can see their news
@@ -144,3 +151,51 @@ class NewsSearchView(APIView):
 
 
 
+
+
+
+# ViewSet для новостей который использует вашу логику
+class NewsViewSet(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+    
+    def list(self, request):
+        # Используем вашу существующую логику из NewsList
+        news_list_view = NewsList()
+        return news_list_view.get(request)
+    
+    def retrieve(self, request, slug=None):
+        # Используем вашу существующую логику из NewsDetailView
+        news_detail_view = NewsDetailView()
+        return news_detail_view.get(request, slug)
+    
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        # Используем вашу существующую логику из NewsSearchView
+        search_view = NewsSearchView()
+        return search_view.get(request)
+    
+    @action(detail=False, methods=['get'])
+    def my_posts(self, request):
+        # Используем вашу существующую логику из MyPosts
+        my_posts_view = MyPosts()
+        return my_posts_view.get(request)
+
+# ViewSet для категорий
+class CategoryViewSet(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+    
+    def list(self, request):
+        # Используем вашу существующую логику из CategoryListCreateView
+        category_view = CategoryListCreateView()
+        return category_view.get(request)
+    
+    def retrieve(self, request, slug=None):
+        # Используем вашу существующую логику из CategoryNewsView
+        category_news_view = CategoryNewsView()
+        return category_news_view.get(request, slug)
+    
+    @action(detail=False, methods=['get'])
+    def latest_news(self, request):
+        # Используем вашу существующую логику из LatestNewsByCategoryView
+        latest_news_view = LatestNewsByCategoryView()
+        return latest_news_view.get(request)
