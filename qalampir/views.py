@@ -18,10 +18,8 @@ from .models import *
 # Create tokens for users
 from rest_framework.authtoken.models import Token
 
-# token = Token.objects.create(user='ali')
-# print(token.key)
 
-
+# Any admins can see all users (admins) list
 class UserList(APIView):
     if User.is_staff:
         authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -33,29 +31,19 @@ class UserList(APIView):
             return Response(serializer.data)
     
 
+# Main admin can see all news and admins can see their news
 class MyPosts(APIView):
-    permission_classes = [IsAuthenticated]  # Только для авторизованных пользователей
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        # Проверяем, является ли пользователь staff
         if request.user.is_superuser:
-            # Если staff - показываем все посты
             queryset = News.objects.all()
         elif request.user.is_staff:
-            # Если обычный пользователь - показываем только его посты
             queryset = News.objects.filter(author=request.user)
         
         serializer = NewsSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
-
-# class UserDetail(APIView):
-#     def get(self, request, pk):
-#         user = get_object_or_404(User, pk=pk)
-#         serializer = UserSerializer(user)
-
-#         return Response(serializer.data)
 
 # Custom Pagination class
 class CustomPagination(PageNumberPagination):
@@ -93,6 +81,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 
 
+# News list by choosen category
 class CategoryNewsView(APIView):
     def get(self, request, slug):
         category = get_object_or_404(Category, slug=slug)
