@@ -11,7 +11,7 @@ services:
       - key: DEBUG
         value: false
       - key: PYTHON_VERSION
-        value: 3.13.7
+        value: 3.11.0
 
 databases:
   - name: django-db
