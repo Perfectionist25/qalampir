@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework import status
 from django.db.models import F
 
 # Authentication tokens
@@ -23,6 +24,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+# Custom Pagination class
+class CustomPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'limit'
+    max_page_size = 30  
 
 # Any admins can see all users (admins) list
 class UserList(APIView):
@@ -50,13 +56,13 @@ class MyPosts(APIView):
         
         serializer = NewsSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-# Custom Pagination class
-class CustomPagination(PageNumberPagination):
-    page_size = 5
-    page_size_query_param = 'limit'
-    max_page_size = 30  
+    
+    def post(self, request):
+        serializer = NewsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Yangiliklar ro'yxati - frontend nechta so'rasa, o'shancha qaytaradi. Aralash videolik va videosiz yangiliklar.

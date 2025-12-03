@@ -22,7 +22,7 @@ class News(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True, null=True)
     content = models.TextField()
-    image = models.ImageField(upload_to='news_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='media/%Y/%m/%d', blank=True, null=True)
     youtube_url = models.URLField(blank=True, null=True, verbose_name='YouTube url')
     is_video = models.BooleanField(default=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
