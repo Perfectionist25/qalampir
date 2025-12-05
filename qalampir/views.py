@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import *
 
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import AllowAny
 from django.db import models  # для Q запросов
 
@@ -22,7 +23,26 @@ from django.db import models  # для Q запросов
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+@api_view(['POST'])
+def Login(request):
+    return Response({'message': 'Login endpoint'})
+
+@api_view(['POST'])
+def Signup(request):
+    return Response({'message': 'Signup endpoint'})
+
+@api_view(['POST'])
+def Logout(request):
+    request.user.auth_token.delete()
+    logout(request)
+    return Response({'message': 'Logged out successfully'})
+
+@api_view(['GET'])
+def test_token(request):
+    return Response({'message': 'Token is valid!'})
 
 # Custom Pagination class
 class CustomPagination(PageNumberPagination):
@@ -50,19 +70,22 @@ class MyPosts(APIView):
     
     def get(self, request):
         if request.user.is_superuser:
-            queryset = News.objects.all()
+            queryset = News.objects.all().order_by('-created_at')
         elif request.user.is_staff:
-            queryset = News.objects.filter(author=request.user)
+            queryset = News.objects.filter(author=request.user).order_by('-created_at')
         
         serializer = NewsSerializer(queryset, many=True)
         return Response(serializer.data)
     
+# Create new news
+class CreateNew(APIView):
     def post(self, request):
         serializer = NewsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # Yangiliklar ro'yxati - frontend nechta so'rasa, o'shancha qaytaradi. Aralash videolik va videosiz yangiliklar.
