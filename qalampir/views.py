@@ -27,15 +27,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 @api_view(['POST'])
-def Login(request):
+def login(request):
     return Response({'message': 'Login endpoint'})
 
 @api_view(['POST'])
-def Signup(request):
+def create_account(request):
+    if request.user.is_superuser:
+        if serializer.is_valid():
+            serializer.save()
+            token = Token.objects.create(user=user)
+            return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
     return Response({'message': 'Signup endpoint'})
 
 @api_view(['POST'])
-def Logout(request):
+def logout(request):
     request.user.auth_token.delete()
     logout(request)
     return Response({'message': 'Logged out successfully'})

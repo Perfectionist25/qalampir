@@ -26,3 +26,7 @@ Authorization: Token your_token_here
 GET http://127.0.0.1:8000/api/news/
 
 ###
+
+GET http://127.0.0.1:8000/api/my-news/
+
+###

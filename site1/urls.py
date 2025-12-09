@@ -9,9 +9,9 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     # Authentication endpoints
-    re_path('login', Login),
-    re_path('signup', Signup),
-    re_path('logout', Logout),
+    re_path('login', login),
+    re_path('signup', create_account),
+    re_path('logout', logout),
     re_path('test-token', test_token),
 
     # API endpoints
