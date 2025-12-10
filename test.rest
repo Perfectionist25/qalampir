@@ -8,18 +8,20 @@ Content-Type: application/json
 
 ###
 
-POST http://127.0.0.1:8000/signup
+POST http://127.0.0.1:8000/create_account
 Content-Type: application/json
 
 {
     "username": "newuser",
-    "password": "newpassword"
+    "password": "qwer/.,m",
+    "email": "new@gmail.com"
 }
 
 ###
 
 GET http://127.0.0.1:8000/test-token
-Authorization: Token your_token_here
+Content-Type: application/json
+Authorization: Token 01564cc4e6b74b17a8c3ca1a91a2c15322898b58
 
 ###
 

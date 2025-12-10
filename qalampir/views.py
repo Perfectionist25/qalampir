@@ -28,16 +28,25 @@ from rest_framework.response import Response
 
 @api_view(['POST'])
 def login(request):
-    return Response({'message': 'Login endpoint'})
+    user = get_object_or_404(User, username=request.data['username'])
+    if not user.check_password(request.data['password']):
+        return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+    token, created = Token.objects.get_or_create(user=user)
+    serializer = UserSerializer(instance=user)
+    return Response({'token': token.key, "user": serializer.data})
 
 @api_view(['POST'])
 def create_account(request):
     if request.user.is_superuser:
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            user.set_password(request.data['password'])
+            user.save()
             token = Token.objects.create(user=user)
             return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
-    return Response({'message': 'Signup endpoint'})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Create account can only superuser'}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def logout(request):
@@ -45,9 +54,15 @@ def logout(request):
     logout(request)
     return Response({'message': 'Logged out successfully'})
 
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication, SessionAuthentication])
+@permission_classes([IsAuthenticated])
 def test_token(request):
-    return Response({'message': 'Token is valid!'})
+    return Response("passed for {}".format(request.user.username))
 
 # Custom Pagination class
 class CustomPagination(PageNumberPagination):
