@@ -9,10 +9,10 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     # Authentication endpoints
-    re_path('login', login), # Majburiy yozilishi kerak inputlar (username, email, password)
-    re_path('create_account', create_account), # Faqat superuser yangi user yaratishi mumkin (username, email, password)
-    re_path('logout', logout), # Foydalanuvchini logout qiladi
-    re_path('test-token', test_token), # Token tekshirish uchun endpoint
+    path('login', login), # Majburiy yozilishi kerak inputlar (username, email, password)
+    path('create_account', create_account), # Faqat superuser yangi user yaratishi mumkin (username, email, password)
+    path('logout', logout), # Foydalanuvchini logout qiladi
+    path('test-token', test_token), # Token tekshirish uchun endpoint
 
     # API endpoints
     path('api/news/', NewsList.as_view(), name='news-list'),
